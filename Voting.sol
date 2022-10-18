@@ -99,7 +99,7 @@ contract Voting is Ownable {
      * @dev Modifier to detect if the sender is a valid voter.
      */
     modifier isVoter {
-        require(voters[msg.sender].isRegistered == true, "You must be a voter to do this.");
+        require(voters[_msgSender()].isRegistered == true, "You must be a voter to do this.");
         _;
     }
 
@@ -109,7 +109,7 @@ contract Voting is Ownable {
      * @return An array of Proposal
      */
     function getMyProposals() external view isVoter returns (Proposal[] memory) {
-        return getVoterProposals(msg.sender);
+        return getVoterProposals(_msgSender());
     }
 
     /**
@@ -119,7 +119,7 @@ contract Voting is Ownable {
      * @return A uint representing the voted proposal id.
      */
     function getMyVotedProposalId() external view isVoter returns(uint) {
-        return getVoterVotedProposalId(msg.sender);
+        return getVoterVotedProposalId(_msgSender());
     }
 
     /**
@@ -129,7 +129,7 @@ contract Voting is Ownable {
      * @return A bool representing the vote status of the sender.
      */
     function getMyVoteStatus() external view isVoter returns(bool) {
-        return getVoterVoteStatus(msg.sender);
+        return getVoterVoteStatus(_msgSender());
     }
 
     /**
@@ -255,14 +255,11 @@ contract Voting is Ownable {
         bytes memory descriptionAsBytes = bytes(_description);
         require(descriptionAsBytes.length > 0, "Cannot use empty description for proposal.");
 
-        for (uint i = 0; i < proposals.length; i++) {
-            if (keccak256(abi.encodePacked((proposals[i].description))) == keccak256(abi.encodePacked((_description))))
-                revert("This proposal already exist, please try with another description.");
-        }
+        require(!doesProposalExist(_description), "This proposal already exist, please try with another description.");
         emit ProposalRegistered(proposals.length);
-        /// BONUS, add msg.sender address to `votersAddress`, useful for `startNewElection` bonus function
-        votersAddress.push(msg.sender);
-        proposals.push(Proposal(_description, 0, msg.sender)); ///msg.sender is a BONUS to retrieve proposal's proposer
+        /// BONUS, add _msgSender() address to `votersAddress`, useful for `startNewElection` bonus function
+        votersAddress.push(_msgSender());
+        proposals.push(Proposal(_description, 0, _msgSender())); ///_msgSender() is a BONUS to retrieve proposal's proposer
     }
 
     /**
@@ -271,18 +268,18 @@ contract Voting is Ownable {
      * The `workflowStatus` must be equal to WorkflowStatus.VotingSessionStarted.
      * There must be at lest one proposal available.
      * The _proposalIndex must be inferior than the `proposals` array length.
-     * The voter (represented by the msg.sender) must have his 'hasVoted' attribute set to false.
+     * The voter (represented by the _msgSender) must have his 'hasVoted' attribute set to false.
      * NOTE: If successful, the function will emit `Voted` event
      */
     function voteForProposal(uint _proposalIndex) external isVoter {
         require(workflowStatus == WorkflowStatus.VotingSessionStarted, "The vote session isn't open.");
         require(proposals.length > 0, "No proposal available.");
         require(_proposalIndex < proposals.length, "Invalid proposal id submitted");
-        require(voters[msg.sender].hasVoted == false, "You have already submitted your vote.");
-        voters[msg.sender].votedProposalId = _proposalIndex;
-        voters[msg.sender].hasVoted = true;
+        require(voters[_msgSender()].hasVoted == false, "You have already submitted your vote.");
+        voters[_msgSender()].votedProposalId = _proposalIndex;
+        voters[_msgSender()].hasVoted = true;
         proposals[_proposalIndex].voteCount++;
-        emit Voted(msg.sender, _proposalIndex);
+        emit Voted(_msgSender(), _proposalIndex);
     }
 
     /**
@@ -412,6 +409,20 @@ contract Voting is Ownable {
     function getVoterVoteStatus(address _addr) public view isVoter returns(bool) {
         require(voters[_addr].isRegistered, "This voter isn't registered.");
         return voters[_addr].hasVoted;
+    }
+
+    /**
+     * @dev A function to check if a proposal already exist (by checking description)
+     * Only callable by a voter.
+     * @return A bool representing the existence of the proposal.
+     */
+    function doesProposalExist(string memory _description) public view returns(bool) {
+       require(owner() == _msgSender() || voters[_msgSender()].isRegistered, "You are neither a voter or the owner.");
+       for (uint i = 0; i < proposals.length; i++) {
+            if (keccak256(abi.encodePacked((proposals[i].description))) == keccak256(abi.encodePacked((_description))))
+                return true;
+        }
+        return false;
     }
 
     /**
