@@ -29,27 +29,13 @@ describe("Voting", () => {
             const _owner = await Voting.owner();
             await expect(owner.address).to.equal(_owner, "Owner are not the same.");
         });
-        it("Should add a voter and emit (.", async () => {
+        it("Should add a voter and emit 'VoterRegistered'.", async () => {
             const addVoterTx = Voting.addVoter(firstVoter.address);
             await expect(addVoterTx).to.emit(Voting, "VoterRegistered").withArgs(firstVoter.address);
         });
         it("Should revert while trying to add voter (onlyOwner modifier).", async () => {
             const addVoterTx = Voting.connect(firstVoter).addVoter(secondVoter.address);
             await expect(addVoterTx).to.be.revertedWith("Ownable: caller is not the owner");
-        });
-    });
-
-    describe('onlyVoter modifier', () => {
-        before(async () => {
-            await loadFixture(deployVotingFixture);
-        })
-        it("Should be not the owner.", async () => {
-            await expect(owner.address).not.to.equal(firstVoter.address, "Owner are the same.");
-        });
-
-        it("Should be the owner.", async () => {
-            const _owner = await Voting.owner();
-            await expect(owner.address).to.equal(_owner, "Owner are not the same.");
         });
     });
 
@@ -201,7 +187,7 @@ describe("Voting", () => {
         });
     });
 
-    describe('Vote Tally', () => {
+    describe('Vote tally', () => {
         it("Should revert while trying to start vote tally session without ownership.", async () => {
             const startProposalRevertedTx = Voting.connect(firstVoter).tallyVotes();
             await expect(startProposalRevertedTx).to.be.revertedWith('Ownable: caller is not the owner');

@@ -7,6 +7,6 @@ require('solidity-coverage')
 module.exports = {
     solidity: "0.8.13",
     gasReporter: {
-        enabled: false
+        enabled: true
     }
 };
