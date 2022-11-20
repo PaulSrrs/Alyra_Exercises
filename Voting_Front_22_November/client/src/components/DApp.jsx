@@ -142,7 +142,6 @@ function DApp({contract, accounts, isOwner, isVoter, voter, workflowStatus, winn
         const workflowCallback = async event => {
             let data = {};
             data.workflowStatus = +event.returnValues.newStatus;
-            console.log(event);
             switch (+event.returnValues.newStatus) {
                 case ProposalsRegistrationStarted:
                     toast.success("Proposal registration has started 📩 !", {toastId: event.id})

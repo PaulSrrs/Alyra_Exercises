@@ -17,7 +17,6 @@ function EthProvider({children}) {
         if (artifact && contract) {
             const accounts = await web3.eth.getAccounts();
             const owner = await contract.methods.owner().call();
-            console.log(accounts, owner)
             let isVoter = false;
             let voter;
 
