@@ -26,6 +26,7 @@ A video presentation of this app can be found at the root of this repository : p
 This presentation has been recorded with [Loom](https://www.loom.com/).
 
 ## Features
+- Responsive design
 - Event subscription to notify user for useful information (voter subscribed, proposal registered...), no need to refresh page.
 - Message and metamask website redirection when metamask is not installed.
 - Button to trigger chain changement to goerli in production only
