@@ -96,7 +96,7 @@ function App() {
                     <Grid container justifyContent={'center'} item xs={12}>
                         {(isWeb3Loading || isLoading) ? <CircularProgress/> :
                             <Grid item xs={12}>
-                                {isGoodNetwork ? (!accounts?.length ?
+                                {isGoodNetwork ? (!!accounts?.length ?
                                         <Grid container direction={'column'} alignItems={'center'}>
                                             <Button variant={'contained'}
                                                     sx={{display: 'block', maxWidth: '200px'}}
