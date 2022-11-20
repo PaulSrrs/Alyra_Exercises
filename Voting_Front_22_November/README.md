@@ -8,7 +8,7 @@ Compile and deploy Voting.sol
 $ cd truffle
 $ truffle compile 
 $ truffle deploy --network $NETWORK_NAME
-  Starting the development server...
+  Compiling your contracts...
 ```
 
 
