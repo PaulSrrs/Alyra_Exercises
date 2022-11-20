@@ -16,16 +16,18 @@ function EthProvider({children}) {
     const handleAccountsChange = useCallback(async () => {
         if (artifact && contract) {
             const accounts = await web3.eth.getAccounts();
-            const owner = await contract.methods.owner().call({from: accounts[0]});
+            const owner = await contract.methods.owner().call();
             console.log(accounts, owner)
             let isVoter = false;
             let voter;
 
-            try {
-                voter = await contract.methods.getVoter(accounts[0]).call({from: accounts[0]});
-                isVoter = voter.isRegistered;
-            } catch (e) {
-                console.error(e);
+            if (!!accounts?.length) {
+                try {
+                    voter = await contract.methods.getVoter(accounts[0]).call({from: accounts[0]});
+                    isVoter = voter.isRegistered;
+                } catch (e) {
+                    console.error(e);
+                }
             }
 
             dispatch({
@@ -46,11 +48,11 @@ function EthProvider({children}) {
             try {
                 let winningProposalId = 0;
                 const accounts = await web3.eth.getAccounts();
-                const owner = await contract.methods.owner().call({from: accounts[0]});
-                const workflowStatus = await contract.methods.workflowStatus().call({from: accounts[0]});
+                const owner = await contract.methods.owner().call();
+                const workflowStatus = await contract.methods.workflowStatus().call();
 
                 if (+workflowStatus === VotesTallied) {
-                    winningProposalId = await contract.methods.winningProposalID().call({from: accounts[0]});
+                    winningProposalId = await contract.methods.winningProposalID().call();
                 }
 
                 await handleAccountsChange()
@@ -60,7 +62,7 @@ function EthProvider({children}) {
                         web3,
                         networkID,
                         contract,
-                        isOwner: accounts[0] === owner,
+                        isOwner: !!accounts?.length ? accounts[0] === owner : false,
                         workflowStatus: +workflowStatus,
                         winningProposalId: +winningProposalId,
                         isWeb3Loading: false

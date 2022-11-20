@@ -114,7 +114,7 @@ function App() {
                                                           voter={voter}
                                                           workflowStatus={workflowStatus}
                                                           winningProposalId={winningProposalId}/> :
-                                            <Typography sx={{color: 'red'}}>No contract found.</Typography>)
+                                            <Typography sx={{color: 'red', textAlign: 'center'}}>No contract found.</Typography>)
                                 ) : <Grid container direction={'column'}
                                           alignItems={'center'}>{(process.env.NODE_ENV !== 'development' ?
                                     <Button variant={'contained'}
