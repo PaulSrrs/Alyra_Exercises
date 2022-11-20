@@ -1,0 +1,14 @@
+.mainCtn {
+    max-width: 1024px;
+    margin: 4rem auto 0;
+    width: 100%;
+    min-height: calc(100vh - 56px);
+    display: flex;
+    padding: 1rem;
+}
+
+.actualWorkflow {
+    font-weight: bold;
+    text-decoration: underline;
+    color: #007FFF;
+}
